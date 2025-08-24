@@ -13,7 +13,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
-# Copiamos el paquete etl
+
 COPY etl/ /app/etl
-# Si el ETL importa modelos/utilidades de api/, descomenta:
-# COPY api/ /app/api
