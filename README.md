@@ -52,5 +52,5 @@ docker-compose up
  -Base de datos PostgreSQL: puerto 5432
 
 ##Detenemos los contenedores##
-
+ crtl + c
  docker-compose down
