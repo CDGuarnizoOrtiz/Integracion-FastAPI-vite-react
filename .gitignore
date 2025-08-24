@@ -1,0 +1,68 @@
+# ==== SO/editores ====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+.idea/
+.vscode/
+.history/
+*.iml
+
+# ==== Python (api/ y etl/) ====
+_pycache_/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+.mypy_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Virtualenvs
+venv/
+.venv/
+.envrc
+.python-version
+
+# ==== Node / React (frontend/) ====
+frontend/node_modules/
+frontend/dist/
+frontend/.eslintcache
+frontend/.parcel-cache/
+frontend/.cache/
+frontend/coverage/
+frontend/.nyc_output/
+frontend/*.tsbuildinfo
+
+# Logs JS
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+.pnpm-store/
+
+# Variables de entorno
+# (mantén .env fuera del repo y crea un .env.example)
+.env
+.env.*
+frontend/.env
+frontend/.env.*
+
+# ==== Docker ====
+# mantenemos Dockerfile(s) y docker-compose.yml, pero ignora overrides locales
+docker-compose.override.yml
+# si alguien crea accidentalmente un volumen bind local:
+db_data/
+
+*.log

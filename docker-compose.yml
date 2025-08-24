@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-prueba_tecnica}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-root}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-prueba_tecnica}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      # Dentro de Docker, el host de Postgres es "db"
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "8000:8000"
+    volumes:
+      # Hot-reload: mapea solo la carpeta api para no romper el paquete
+      - ./api:/app/api
+      - ./requirements.txt:/requirements.txt:ro
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ETL: one-shot al levantar (ajusta el comando si cambia el flujo)
+  etl:
+    build:
+      context: .
+      dockerfile: etl/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    command: >
+      sh -c "
+      python -m etl.create_tablas &&
+      python -m etl.extract &&
+      python -m etl.transform &&
+      python -m etl.load
+      "
+    restart: "no"
+
+  # Frontend en producción (Nginx sirve / y proxy a /api)
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: /api
+    depends_on:
+      - api
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
+volumes:
+  db_data:
